@@ -1,6 +1,11 @@
 package pl.kzcwat.localincidentserver.region;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,8 +32,13 @@ public class RegionController {
     private final RegionService regionService;
 
     @GetMapping
-    public Iterable<RegionEntity> getAllRegions() {
-        return this.regionService.getAllRegions();
+    public Page<RegionEntity> getRegionsPage(
+            @PageableDefault(page = 0, size = 5)
+            @SortDefault.SortDefaults({
+                    @SortDefault(sort = "regionId", direction = Sort.Direction.ASC)
+            })
+                    Pageable pageable) {
+        return regionService.getAllRegions(pageable);
     }
 
     @GetMapping("{regionId}")
@@ -48,10 +58,10 @@ public class RegionController {
         try {
             RegionEntity region = regionService.saveRegion(regionRequest);
             URI location = ServletUriComponentsBuilder
-                         .fromCurrentRequest()
-                         .path("/{id}")
-                         .buildAndExpand(region.getRegionId())
-                         .toUri();
+                    .fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(region.getRegionId())
+                    .toUri();
             return ResponseEntity.created(location).body(region);
         } catch (RegionNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

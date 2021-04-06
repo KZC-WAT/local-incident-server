@@ -1,6 +1,8 @@
 package pl.kzcwat.localincidentserver.region;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.kzcwat.localincidentserver.region.exception.RegionNotFoundException;
 import pl.kzcwat.localincidentserver.region.request.RegionRequest;
@@ -15,8 +17,8 @@ public class RegionService {
     private final RegionRepository regionRepository;
     private final RegionFactory regionFactory;
 
-    public Iterable<RegionEntity> getAllRegions() {
-        return regionRepository.findAll();
+    public Page<RegionEntity> getAllRegions(Pageable pageable) {
+        return regionRepository.findAll(pageable);
     }
 
     public Optional<RegionEntity> getRegion(Long id) throws RegionNotFoundException, IllegalArgumentException {
