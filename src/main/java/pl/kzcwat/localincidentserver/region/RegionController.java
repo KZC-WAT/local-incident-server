@@ -11,17 +11,17 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/region")
+@RequestMapping("api/v1/region")
 public class RegionController {
 
     private final RegionService regionService;
 
-    @GetMapping()
+    @GetMapping
     public Iterable<RegionEntity> getAllRegions() {
         return this.regionService.getAllRegions();
     }
 
-    @GetMapping("/{regionId}")
+    @GetMapping("{regionId}")
     public ResponseEntity<RegionEntity> getRegion(@PathVariable Long regionId) {
         try {
             Optional<RegionEntity> regionEntity = regionService.getRegion(regionId);
@@ -33,10 +33,16 @@ public class RegionController {
         }
     }
 
-    @PostMapping("/addRegion")
+    @PostMapping("addRegion")
     public ResponseEntity<RegionEntity> saveRegion(@RequestBody RegionRequest regionRequest) {
         try {
-            return new ResponseEntity<>(regionService.saveRegion(regionRequest), HttpStatus.CREATED);
+            RegionEntity region = regionService.saveRegion(regionRequest);
+            URI location = ServletUriComponentsBuilder
+                         .fromCurrentRequest()
+                         .path("/{id}")
+                         .buildAndExpand(region.getId())
+                         .toUri();
+            return ResponseEntity.created(location).body(region).build();
         } catch (RegionNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (NullPointerException e) {
@@ -44,7 +50,7 @@ public class RegionController {
         }
     }
 
-    @PutMapping("/{regionId}")
+    @PutMapping("{regionId}")
     public ResponseEntity<RegionEntity> replaceEmployee(@PathVariable Long regionId, @RequestBody RegionRequest regionRequest) {
         try {
             return new ResponseEntity<>(regionService.replaceRegion(regionId, regionRequest), HttpStatus.OK);

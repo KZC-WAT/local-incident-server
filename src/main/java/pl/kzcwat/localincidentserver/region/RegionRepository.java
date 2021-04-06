@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface RegionRepository extends CrudRepository<RegionEntity, Long> {
+public interface RegionRepository extends JpaRepository<RegionEntity, Long> {
 
     Optional<RegionEntity> findByRegionName(String name);
 

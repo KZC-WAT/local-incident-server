@@ -9,7 +9,7 @@ import pl.kzcwat.localincidentserver.region.request.RegionRequest;
 @Service
 public class RegionFactory {
 
-    private RegionRepository regionRepository;
+    private final RegionRepository regionRepository;
 
     public RegionRequest EntityToDTO(RegionEntity regionEntity) {
         return RegionRequest.builder()
