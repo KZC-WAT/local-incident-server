@@ -1,11 +1,11 @@
 package pl.kzcwat.localincidentserver.region;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.kzcwat.localincidentserver.region.exception.RegionNotFoundException;
 import pl.kzcwat.localincidentserver.region.request.RegionRequest;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class RegionFactory {
 
