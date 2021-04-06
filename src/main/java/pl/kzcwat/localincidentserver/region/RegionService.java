@@ -42,8 +42,11 @@ public class RegionService {
     public RegionEntity modifyRegion(Long regionId, RegionRequest dto) throws RegionNotFoundException, IllegalArgumentException {
         RegionEntity regionEntity = regionRepository.findById(regionId).orElseThrow(RegionNotFoundException::new);
 
-        regionEntity.setRegionName(dto.getRegionName());
-        regionEntity.setSuperRegion(regionRepository.findByRegionName(dto.getSuperRegionName()).orElse(null));
+        if (dto.getRegionName() != null)
+            regionEntity.setRegionName(dto.getRegionName());
+
+        if (dto.getSuperRegionName() != null)
+            regionEntity.setSuperRegion(regionRepository.findByRegionName(dto.getSuperRegionName()).orElse(null));
 
         return regionRepository.save(regionEntity);
     }
