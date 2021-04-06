@@ -51,7 +51,7 @@ public class RegionController {
     }
 
     @PutMapping("{regionId}")
-    public ResponseEntity<RegionEntity> replaceEmployee(@PathVariable Long regionId, @RequestBody RegionRequest regionRequest) {
+    public ResponseEntity<RegionEntity> replaceRegion(@PathVariable Long regionId, @RequestBody RegionRequest regionRequest) {
         try {
             return new ResponseEntity<>(regionService.replaceRegion(regionId, regionRequest), HttpStatus.OK);
         } catch (RegionNotFoundException e) {
@@ -62,7 +62,7 @@ public class RegionController {
     }
 
     @PatchMapping("/{regionId}")
-    public ResponseEntity<RegionEntity> modifyEmployee(@PathVariable Long regionId, @RequestBody RegionRequest regionRequest) {
+    public ResponseEntity<RegionEntity> modifyRegion(@PathVariable Long regionId, @RequestBody RegionRequest regionRequest) {
         try {
             return new ResponseEntity<>(regionService.modifyRegion(regionId, regionRequest), HttpStatus.OK);
         } catch (RegionNotFoundException e) {
