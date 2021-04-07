@@ -1,5 +1,6 @@
 package pl.kzcwat.localincidentserver.region;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.kzcwat.localincidentserver.region.exception.RegionNotFoundException;
+import pl.kzcwat.localincidentserver.region.request.RegionModifyRequest;
 import pl.kzcwat.localincidentserver.region.request.RegionRequest;
 
 import java.net.URI;
@@ -38,7 +40,7 @@ public class RegionController {
                     @SortDefault(sort = "regionId", direction = Sort.Direction.ASC)
             })
                     Pageable pageable) {
-        return regionService.getAllRegions(pageable);
+        return regionService.getRegionsPage(pageable);
     }
 
     @GetMapping("{regionId}")
@@ -82,11 +84,13 @@ public class RegionController {
     }
 
     @PatchMapping("{regionId}")
-    public ResponseEntity<RegionEntity> modifyRegion(@PathVariable Long regionId, @RequestBody RegionRequest regionRequest) {
+    public ResponseEntity<RegionEntity> modifyRegion(@PathVariable Long regionId, @RequestBody RegionModifyRequest regionModifyRequest) {
         try {
-            return new ResponseEntity<>(regionService.modifyRegion(regionId, regionRequest), HttpStatus.OK);
+            return new ResponseEntity<>(regionService.modifyRegion(regionId, regionModifyRequest), HttpStatus.OK);
         } catch (RegionNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (JsonMappingException e) {
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

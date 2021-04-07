@@ -1,10 +1,12 @@
 package pl.kzcwat.localincidentserver.region;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.kzcwat.localincidentserver.region.exception.RegionNotFoundException;
+import pl.kzcwat.localincidentserver.region.request.RegionModifyRequest;
 import pl.kzcwat.localincidentserver.region.request.RegionRequest;
 
 import javax.transaction.Transactional;
@@ -17,7 +19,7 @@ public class RegionService {
     private final RegionRepository regionRepository;
     private final RegionFactory regionFactory;
 
-    public Page<RegionEntity> getAllRegions(Pageable pageable) {
+    public Page<RegionEntity> getRegionsPage(Pageable pageable) {
         return regionRepository.findAll(pageable);
     }
 
@@ -34,21 +36,32 @@ public class RegionService {
     public RegionEntity replaceRegion(Long regionId, RegionRequest dto) throws RegionNotFoundException, IllegalArgumentException {
         RegionEntity regionEntity = getRegion(regionId).orElseThrow(RegionNotFoundException::new);
 
-        RegionEntity newRegionEntity = regionFactory.DTOtoEntity(dto);
-        newRegionEntity.setRegionId(regionEntity.getRegionId());
+        if (dto.getSuperRegionName() != null && dto.getSuperRegionName().equals(regionEntity.getRegionName()))
+            dto.setSuperRegionName(null);
 
-        return regionRepository.save(newRegionEntity);
+        RegionEntity updatedRegionEntity = regionFactory.DTOtoEntity(dto);
+        updatedRegionEntity.setRegionId(regionEntity.getRegionId());
+
+        return regionRepository.save(updatedRegionEntity);
     }
 
     @Transactional
-    public RegionEntity modifyRegion(Long regionId, RegionRequest dto) throws RegionNotFoundException, IllegalArgumentException {
+    public RegionEntity modifyRegion(Long regionId, RegionModifyRequest dto) throws RegionNotFoundException, IllegalArgumentException, JsonMappingException {
         RegionEntity regionEntity = regionRepository.findById(regionId).orElseThrow(RegionNotFoundException::new);
 
-        if (dto.getRegionName() != null)
-            regionEntity.setRegionName(dto.getRegionName());
+        if (dto.getRegionName().isPresent())
+            if (dto.getRegionName().get() != null)
+                regionEntity.setRegionName(dto.getRegionName().get());
 
-        if (dto.getSuperRegionName() != null)
-            regionEntity.setSuperRegion(regionRepository.findByRegionName(dto.getSuperRegionName()).orElse(null));
+        if (dto.getSuperRegionName().isPresent())
+            if (dto.getSuperRegionName().get() != null && !dto.getSuperRegionName().get().equals(regionEntity.getRegionName()))
+                regionEntity.setSuperRegion(
+                        regionRepository
+                                .findByRegionName(dto.getSuperRegionName().get())
+                                .orElseThrow(RegionNotFoundException::new)
+                );
+            else
+                regionEntity.setSuperRegion(null);
 
         return regionRepository.save(regionEntity);
     }

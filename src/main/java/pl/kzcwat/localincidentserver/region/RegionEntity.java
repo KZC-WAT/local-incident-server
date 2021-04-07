@@ -30,7 +30,7 @@ public class RegionEntity implements Serializable {
     @JoinColumn(name = "super_region", nullable = true)
     private RegionEntity superRegion;
 
-    @Column(name = "region_name", unique = true)
+    @Column(name = "region_name", unique = true, nullable = false)
     private String regionName;
 
 }
