@@ -23,6 +23,7 @@ import pl.kzcwat.localincidentserver.region.exception.RegionNotFoundException;
 import pl.kzcwat.localincidentserver.region.request.RegionModifyRequest;
 import pl.kzcwat.localincidentserver.region.request.RegionRequest;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.Optional;
 
@@ -35,18 +36,18 @@ public class RegionController {
 
     @GetMapping
     public Page<RegionEntity> getRegionsPage(
-            @PageableDefault(page = 0, size = 5)
+            @PageableDefault(size = 5)
             @SortDefault.SortDefaults({
-                    @SortDefault(sort = "regionId", direction = Sort.Direction.ASC)
+                    @SortDefault(sort = "id", direction = Sort.Direction.ASC)
             })
                     Pageable pageable) {
         return regionService.getRegionsPage(pageable);
     }
 
-    @GetMapping("{regionId}")
-    public ResponseEntity<RegionEntity> getRegion(@PathVariable Long regionId) {
+    @GetMapping("{id}")
+    public ResponseEntity<RegionEntity> getRegion(@PathVariable Long id) {
         try {
-            Optional<RegionEntity> regionEntity = regionService.getRegion(regionId);
+            Optional<RegionEntity> regionEntity = regionService.getRegion(id);
             return regionEntity.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -56,13 +57,13 @@ public class RegionController {
     }
 
     @PostMapping
-    public ResponseEntity<RegionEntity> saveRegion(@RequestBody RegionRequest regionRequest) {
+    public ResponseEntity<RegionEntity> saveRegion(@Valid @RequestBody RegionRequest regionRequest) {
         try {
             RegionEntity region = regionService.saveRegion(regionRequest);
             URI location = ServletUriComponentsBuilder
                     .fromCurrentRequest()
                     .path("/{id}")
-                    .buildAndExpand(region.getRegionId())
+                    .buildAndExpand(region.getId())
                     .toUri();
             return ResponseEntity.created(location).body(region);
         } catch (RegionNotFoundException e) {
@@ -72,10 +73,10 @@ public class RegionController {
         }
     }
 
-    @PutMapping("{regionId}")
-    public ResponseEntity<RegionEntity> replaceRegion(@PathVariable Long regionId, @RequestBody RegionRequest regionRequest) {
+    @PutMapping("{id}")
+    public ResponseEntity<RegionEntity> replaceRegion(@PathVariable Long id, @Valid @RequestBody RegionRequest regionRequest) {
         try {
-            return new ResponseEntity<>(regionService.replaceRegion(regionId, regionRequest), HttpStatus.OK);
+            return new ResponseEntity<>(regionService.replaceRegion(id, regionRequest), HttpStatus.OK);
         } catch (RegionNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (IllegalArgumentException e) {
@@ -83,10 +84,10 @@ public class RegionController {
         }
     }
 
-    @PatchMapping("{regionId}")
-    public ResponseEntity<RegionEntity> modifyRegion(@PathVariable Long regionId, @RequestBody RegionModifyRequest regionModifyRequest) {
+    @PatchMapping("{id}")
+    public ResponseEntity<RegionEntity> modifyRegion(@PathVariable Long id, @Valid @RequestBody RegionModifyRequest regionModifyRequest) {
         try {
-            return new ResponseEntity<>(regionService.modifyRegion(regionId, regionModifyRequest), HttpStatus.OK);
+            return new ResponseEntity<>(regionService.modifyRegion(id, regionModifyRequest), HttpStatus.OK);
         } catch (RegionNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (JsonMappingException e) {
@@ -96,10 +97,10 @@ public class RegionController {
         }
     }
 
-    @DeleteMapping("{regionId}")
-    public ResponseEntity<?> deleteRegion(@PathVariable Long regionId) {
+    @DeleteMapping("{id}")
+    public ResponseEntity<?> deleteRegion(@PathVariable Long id) {
         try {
-            regionService.deleteRegion(regionId);
+            regionService.deleteRegion(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

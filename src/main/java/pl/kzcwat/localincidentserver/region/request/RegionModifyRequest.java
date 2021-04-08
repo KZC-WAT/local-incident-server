@@ -1,15 +1,17 @@
 package pl.kzcwat.localincidentserver.region.request;
 
-import com.sun.istack.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.openapitools.jackson.nullable.JsonNullable;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
 public class RegionModifyRequest {
     @NotNull
+    @Size(min = 3)
     private JsonNullable<String> regionName = JsonNullable.undefined();
-
-    private JsonNullable<String> superRegionName = JsonNullable.undefined();
+    private JsonNullable<Long> superRegionId = JsonNullable.undefined();
 }

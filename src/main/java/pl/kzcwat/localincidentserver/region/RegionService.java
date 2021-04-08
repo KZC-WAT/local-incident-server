@@ -36,11 +36,11 @@ public class RegionService {
     public RegionEntity replaceRegion(Long regionId, RegionRequest dto) throws RegionNotFoundException, IllegalArgumentException {
         RegionEntity regionEntity = getRegion(regionId).orElseThrow(RegionNotFoundException::new);
 
-        if (dto.getSuperRegionName() != null && dto.getSuperRegionName().equals(regionEntity.getRegionName()))
-            dto.setSuperRegionName(null);
+        if (dto.getSuperRegionId() != null && dto.getSuperRegionId().equals(regionEntity.getId()))
+            dto.setSuperRegionId(null);
 
         RegionEntity updatedRegionEntity = regionFactory.DTOtoEntity(dto);
-        updatedRegionEntity.setRegionId(regionEntity.getRegionId());
+        updatedRegionEntity.setId(regionEntity.getId());
 
         return regionRepository.save(updatedRegionEntity);
     }
@@ -51,13 +51,13 @@ public class RegionService {
 
         if (dto.getRegionName().isPresent())
             if (dto.getRegionName().get() != null)
-                regionEntity.setRegionName(dto.getRegionName().get());
+                regionEntity.setName(dto.getRegionName().get());
 
-        if (dto.getSuperRegionName().isPresent())
-            if (dto.getSuperRegionName().get() != null && !dto.getSuperRegionName().get().equals(regionEntity.getRegionName()))
+        if (dto.getSuperRegionId().isPresent())
+            if (dto.getSuperRegionId().get() != null && !dto.getSuperRegionId().get().equals(regionEntity.getId()))
                 regionEntity.setSuperRegion(
                         regionRepository
-                                .findByRegionName(dto.getSuperRegionName().get())
+                                .findById(dto.getSuperRegionId().get())
                                 .orElseThrow(RegionNotFoundException::new)
                 );
             else
