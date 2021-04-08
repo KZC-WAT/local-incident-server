@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import pl.kzcwat.localincidentserver.announcement.request.AnnouncementReplaceRequest;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -12,6 +13,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AnnouncementService {
     private final AnnouncementRepository announcementRepository;
+    private final AnnouncementMapper announcementMapper;
 
     public Page<Announcement> getAnnouncementsPage(Pageable pageable) {
         return announcementRepository.findAll(pageable);
@@ -19,5 +21,10 @@ public class AnnouncementService {
 
     public Optional<Announcement> getAnnouncement(UUID announcementId) {
         return announcementRepository.findById(announcementId);
+    }
+
+    public Announcement saveAnnouncement(AnnouncementReplaceRequest announcementRequest) {
+        Announcement newAnnouncement = announcementMapper.mapToEntity(announcementRequest);
+        return announcementRepository.save(newAnnouncement);
     }
 }
