@@ -10,13 +10,14 @@ import org.springframework.data.domain.Pageable;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @SpringBootTest
 @Transactional
 class AnnouncementServiceTest {
-
     @Autowired
     private AnnouncementService announcementService;
 
@@ -47,5 +48,20 @@ class AnnouncementServiceTest {
         List<Announcement> resultList = resultPage.getContent();
 
         Assertions.assertEquals(listSize, resultList.size());
+    }
+
+    @Test
+    public void getAnnouncementById_existingId_shouldReturnSameEntity() {
+        Announcement newAnnouncement = announcementRepository.save(new Announcement());
+        UUID newAnnouncementUuid = newAnnouncement.getId();
+
+        Optional<Announcement> announcementOptional = announcementService.getAnnouncement(newAnnouncementUuid);
+
+        if (announcementOptional.isPresent()) {
+            Announcement getByIdAnnouncement = announcementOptional.get();
+            Assertions.assertEquals(newAnnouncement, getByIdAnnouncement);
+        } else {
+            Assertions.fail();
+        }
     }
 }
