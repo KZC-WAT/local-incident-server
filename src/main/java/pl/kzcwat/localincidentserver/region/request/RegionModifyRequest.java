@@ -12,6 +12,6 @@ import javax.validation.constraints.Size;
 public class RegionModifyRequest {
     @NotNull
     @Size(min = 3)
-    private JsonNullable<String> regionName = JsonNullable.undefined();
+    private JsonNullable<String> name = JsonNullable.undefined();
     private JsonNullable<Long> superRegionId = JsonNullable.undefined();
 }

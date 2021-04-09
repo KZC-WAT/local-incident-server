@@ -11,6 +11,6 @@ import javax.validation.constraints.Size;
 public class RegionRequest {
     @NotNull
     @Size(min = 3)
-    private String regionName;
+    private String name;
     private Long superRegionId;
 }
