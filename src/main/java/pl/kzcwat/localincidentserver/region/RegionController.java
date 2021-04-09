@@ -35,7 +35,7 @@ public class RegionController {
     private final RegionService regionService;
 
     @GetMapping
-    public Page<RegionEntity> getRegionsPage(
+    public Page<Region> getRegionsPage(
             @PageableDefault(size = 5)
             @SortDefault.SortDefaults({
                     @SortDefault(sort = "id", direction = Sort.Direction.ASC)
@@ -45,9 +45,9 @@ public class RegionController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<RegionEntity> getRegion(@PathVariable Long id) {
+    public ResponseEntity<Region> getRegion(@PathVariable Long id) {
         try {
-            Optional<RegionEntity> regionEntity = regionService.getRegion(id);
+            Optional<Region> regionEntity = regionService.getRegion(id);
             return regionEntity.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -57,9 +57,9 @@ public class RegionController {
     }
 
     @PostMapping
-    public ResponseEntity<RegionEntity> saveRegion(@Valid @RequestBody RegionRequest regionRequest) {
+    public ResponseEntity<Region> saveRegion(@Valid @RequestBody RegionRequest regionRequest) {
         try {
-            RegionEntity region = regionService.saveRegion(regionRequest);
+            Region region = regionService.saveRegion(regionRequest);
             URI location = ServletUriComponentsBuilder
                     .fromCurrentRequest()
                     .path("/{id}")
@@ -74,7 +74,7 @@ public class RegionController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<RegionEntity> replaceRegion(@PathVariable Long id, @Valid @RequestBody RegionRequest regionRequest) {
+    public ResponseEntity<Region> replaceRegion(@PathVariable Long id, @Valid @RequestBody RegionRequest regionRequest) {
         try {
             return new ResponseEntity<>(regionService.replaceRegion(id, regionRequest), HttpStatus.OK);
         } catch (RegionNotFoundException e) {
@@ -85,7 +85,7 @@ public class RegionController {
     }
 
     @PatchMapping("{id}")
-    public ResponseEntity<RegionEntity> modifyRegion(@PathVariable Long id, @Valid @RequestBody RegionModifyRequest regionModifyRequest) {
+    public ResponseEntity<Region> modifyRegion(@PathVariable Long id, @Valid @RequestBody RegionModifyRequest regionModifyRequest) {
         try {
             return new ResponseEntity<>(regionService.modifyRegion(id, regionModifyRequest), HttpStatus.OK);
         } catch (RegionNotFoundException e) {

@@ -19,64 +19,64 @@ public class RegionService {
     private final RegionRepository regionRepository;
     private final RegionFactory regionFactory;
 
-    public Page<RegionEntity> getRegionsPage(Pageable pageable) {
+    public Page<Region> getRegionsPage(Pageable pageable) {
         return regionRepository.findAll(pageable);
     }
 
-    public Optional<RegionEntity> getRegion(Long id) throws RegionNotFoundException, IllegalArgumentException {
+    public Optional<Region> getRegion(Long id) throws RegionNotFoundException, IllegalArgumentException {
         return regionRepository.findById(id);
     }
 
     @Transactional
-    public RegionEntity saveRegion(RegionRequest dto) throws RegionNotFoundException, NullPointerException {
+    public Region saveRegion(RegionRequest dto) throws RegionNotFoundException, NullPointerException {
         return regionRepository.save(regionFactory.dtoToEntity(dto));
     }
 
     @Transactional
-    public RegionEntity replaceRegion(Long regionId, RegionRequest dto) throws RegionNotFoundException, IllegalArgumentException {
-        RegionEntity regionEntity = getRegion(regionId).orElseThrow(RegionNotFoundException::new);
+    public Region replaceRegion(Long regionId, RegionRequest dto) throws RegionNotFoundException, IllegalArgumentException {
+        Region region = getRegion(regionId).orElseThrow(RegionNotFoundException::new);
 
         if (dto.getSuperRegionId() == null)
-            regionEntity.setSuperRegion(null);
+            region.setSuperRegion(null);
         else if (dto.getSuperRegionId().equals(regionId))
             throw new IllegalArgumentException();
         else if (regionRepository.existsRegionByIdAndSuperRegionId(dto.getSuperRegionId(), regionId))
             throw new IllegalArgumentException();
 
-        RegionEntity updatedRegionEntity = regionFactory.dtoToEntity(dto);
-        updatedRegionEntity.setId(regionEntity.getId());
+        Region updatedRegion = regionFactory.dtoToEntity(dto);
+        updatedRegion.setId(region.getId());
 
-        return regionRepository.save(updatedRegionEntity);
+        return regionRepository.save(updatedRegion);
     }
 
     @Transactional
-    public RegionEntity modifyRegion(Long regionId, RegionModifyRequest dto) throws RegionNotFoundException, IllegalArgumentException, JsonMappingException {
-        RegionEntity regionEntity = regionRepository.findById(regionId).orElseThrow(RegionNotFoundException::new);
+    public Region modifyRegion(Long regionId, RegionModifyRequest dto) throws RegionNotFoundException, IllegalArgumentException, JsonMappingException {
+        Region region = regionRepository.findById(regionId).orElseThrow(RegionNotFoundException::new);
 
         if (dto.getName().isPresent())
             if (dto.getName().get() != null)
-                regionEntity.setName(dto.getName().get());
+                region.setName(dto.getName().get());
 
         if (dto.getSuperRegionId().isPresent())
             if (dto.getSuperRegionId().get() == null)
-                regionEntity.setSuperRegion(null);
+                region.setSuperRegion(null);
             else if (dto.getSuperRegionId().get().equals(regionId))
                 throw new IllegalArgumentException();
             else if (regionRepository.existsRegionByIdAndSuperRegionId(dto.getSuperRegionId().get(), regionId))
                 throw new IllegalArgumentException();
             else
-                regionEntity.setSuperRegion(
+                region.setSuperRegion(
                         regionRepository
                                 .findById(dto.getSuperRegionId().get())
                                 .orElseThrow(RegionNotFoundException::new)
                 );
 
-        return regionRepository.save(regionEntity);
+        return regionRepository.save(region);
     }
 
     @Transactional
     public void deleteRegion(Long id) throws RegionNotFoundException, IllegalArgumentException {
-        RegionEntity superRegion = regionRepository.findById(id).orElseThrow(RegionNotFoundException::new);
+        Region superRegion = regionRepository.findById(id).orElseThrow(RegionNotFoundException::new);
         regionRepository.findAllBySuperRegion(superRegion)
                 .forEach(x -> {
                     x.setSuperRegion(null);

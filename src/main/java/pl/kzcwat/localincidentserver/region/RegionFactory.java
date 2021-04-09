@@ -11,22 +11,22 @@ public class RegionFactory {
 
     private final RegionRepository regionRepository;
 
-    public RegionRequest entityToDTO(RegionEntity regionEntity) {
+    public RegionRequest entityToDTO(Region region) {
         return RegionRequest.builder()
-                .name(regionEntity.getName())
-                .superRegionId(regionEntity.getSuperRegion().getId())
+                .name(region.getName())
+                .superRegionId(region.getSuperRegion().getId())
                 .build();
     }
 
-    public RegionEntity dtoToEntity(RegionRequest regionRequest) throws RegionNotFoundException {
+    public Region dtoToEntity(RegionRequest regionRequest) throws RegionNotFoundException {
         return regionRequest.getSuperRegionId() == null
                 ?
-                RegionEntity.builder()
+                Region.builder()
                         .name(regionRequest.getName())
                         .superRegion(null)
                         .build()
                 :
-                RegionEntity.builder()
+                Region.builder()
                         .name(regionRequest.getName())
                         .superRegion(regionRepository.findById(regionRequest.getSuperRegionId()).orElseThrow(RegionNotFoundException::new))
                         .build();

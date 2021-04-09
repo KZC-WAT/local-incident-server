@@ -4,9 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface RegionRepository extends JpaRepository<RegionEntity, Long> {
+public interface RegionRepository extends JpaRepository<Region, Long> {
 
-    List<RegionEntity> findAllBySuperRegion(RegionEntity superRegion);
+    List<Region> findAllBySuperRegion(Region superRegion);
 
     Boolean existsRegionByIdAndSuperRegionId(Long id, Long superRegionId);
 

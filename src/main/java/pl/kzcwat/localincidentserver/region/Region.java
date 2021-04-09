@@ -19,7 +19,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "region_entity")
-public class RegionEntity implements Serializable {
+public class Region implements Serializable {
 
     @Id
     @Column(name = "region_id")
@@ -31,5 +31,5 @@ public class RegionEntity implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "super_region")
-    private RegionEntity superRegion;
+    private Region superRegion;
 }
