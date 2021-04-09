@@ -1,5 +1,6 @@
 package pl.kzcwat.localincidentserver.region;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import pl.kzcwat.localincidentserver.announcement.Announcement;
 
@@ -14,6 +15,7 @@ public class Region {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "region")
     private List<Announcement> announcements;
 

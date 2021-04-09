@@ -33,7 +33,7 @@ class AnnouncementControllerTest {
     private AnnouncementRepository announcementRepository;
 
     @Autowired
-    private AnnouncementMapper announcementMapper;
+    private AnnouncementFactory announcementFactory;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -94,7 +94,7 @@ class AnnouncementControllerTest {
     @Test
     public void saveAnnouncement_validJson_shouldReturnHttpOk() throws Exception {
         Announcement announcement = announcementRepository.save(AnnouncementSampleDataGenerator.getSampleAnnouncement());
-        AnnouncementReplaceRequest announcementReplaceRequest = announcementMapper.mapToReplaceRequest(announcement);
+        AnnouncementReplaceRequest announcementReplaceRequest = announcementFactory.mapToReplaceRequest(announcement);
         String announcementReplaceRequestJson = objectMapper.writeValueAsString(announcementReplaceRequest);
 
         mockMvc.perform(post(baseUri).content(announcementReplaceRequestJson).contentType(MediaType.APPLICATION_JSON))
@@ -102,6 +102,14 @@ class AnnouncementControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(header().exists(HttpHeaders.LOCATION))
+                .andReturn();
+    }
+
+    @Test
+    public void deleteAnnouncement_shouldReturnHttpOk() throws Exception {
+        mockMvc.perform(post(baseUri))
+                .andDo(print())
+                .andExpect(status().isOk())
                 .andReturn();
     }
 }

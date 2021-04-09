@@ -8,12 +8,10 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.kzcwat.localincidentserver.announcement.exception.AnnouncementNotFoundException;
 import pl.kzcwat.localincidentserver.announcement.request.AnnouncementReplaceRequest;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -21,7 +19,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/v1/announcement")
+@RequestMapping("api/v1/announcements")
 @RequiredArgsConstructor
 public class AnnouncementController {
     private final AnnouncementService announcementService;
@@ -63,5 +61,10 @@ public class AnnouncementController {
         }
     }
     
-    // TODO: replace, modify, delete endpoints
+    // TODO: replace, modify endpoints
+
+    @DeleteMapping("{announcementId}")
+    public void deleteAnnouncement(@PathVariable UUID announcementId) {
+        announcementService.deleteAnnouncement(announcementId);
+    }
 }

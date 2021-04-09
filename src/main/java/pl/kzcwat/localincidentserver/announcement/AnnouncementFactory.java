@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
-public class AnnouncementMapper {
+public class AnnouncementFactory {
     private final RegionRepository regionRepository;
     private final UserProfileRepository userProfileRepository;
 

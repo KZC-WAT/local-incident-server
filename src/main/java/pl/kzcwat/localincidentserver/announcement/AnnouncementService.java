@@ -13,7 +13,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AnnouncementService {
     private final AnnouncementRepository announcementRepository;
-    private final AnnouncementMapper announcementMapper;
+    private final AnnouncementFactory announcementFactory;
 
     public Page<Announcement> getAnnouncementsPage(Pageable pageable) {
         return announcementRepository.findAll(pageable);
@@ -24,7 +24,11 @@ public class AnnouncementService {
     }
 
     public Announcement saveAnnouncement(AnnouncementReplaceRequest announcementRequest) {
-        Announcement newAnnouncement = announcementMapper.mapToEntity(announcementRequest);
+        Announcement newAnnouncement = announcementFactory.mapToEntity(announcementRequest);
         return announcementRepository.save(newAnnouncement);
+    }
+
+    public void deleteAnnouncement(UUID announcementId) {
+        announcementRepository.deleteById(announcementId);
     }
 }

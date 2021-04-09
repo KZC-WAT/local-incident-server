@@ -1,5 +1,6 @@
 package pl.kzcwat.localincidentserver.userprofile;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import pl.kzcwat.localincidentserver.announcement.Announcement;
 
@@ -14,6 +15,7 @@ public class UserProfile {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "author")
     private List<Announcement> announcements;
 
