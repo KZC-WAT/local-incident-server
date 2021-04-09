@@ -49,11 +49,7 @@ public class AnnouncementController {
     }
 
     @PostMapping
-    public ResponseEntity<?> saveAnnouncement(@Valid @RequestBody AnnouncementReplaceRequest announcementRequest,
-                                              @ApiIgnore Errors errors) {
-        if (errors.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> saveAnnouncement(@Valid @RequestBody AnnouncementReplaceRequest announcementRequest) {
         try {
             Announcement newAnnouncement = announcementService.saveAnnouncement(announcementRequest);
             URI location = ServletUriComponentsBuilder
@@ -66,4 +62,6 @@ public class AnnouncementController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+    
+    // TODO: replace, modify, delete endpoints
 }
