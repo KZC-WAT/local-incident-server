@@ -11,10 +11,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import pl.kzcwat.localincidentserver.announcement.request.AnnouncementReplaceRequest;
 
 import javax.transaction.Transactional;
-import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static pl.kzcwat.localincidentserver.announcement.AnnouncementSampleDataGenerator.getSampleAnnouncement;
@@ -23,8 +21,7 @@ import static pl.kzcwat.localincidentserver.announcement.AnnouncementSampleDataG
 @AutoConfigureMockMvc
 @Transactional
 class AnnouncementControllerTest {
-    private static final String baseUri = "/api/v1/announcement/";
-    private static final String illformedUuid = "foo-foo-foo-foo";
+    private static final String baseUri = "/api/v1/announcements/";
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,9 +47,9 @@ class AnnouncementControllerTest {
     @Test
     public void getAnnouncementById_existingId_shouldReturnHttpCreated() throws Exception {
         Announcement newAnnouncement = announcementRepository.save(getSampleAnnouncement());
-        UUID newAnnouncementUuid = newAnnouncement.getId();
+        Long newAnnouncementId = newAnnouncement.getId();
 
-        mockMvc.perform(get(baseUri + newAnnouncementUuid))
+        mockMvc.perform(get(baseUri + newAnnouncementId))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -61,17 +58,9 @@ class AnnouncementControllerTest {
 
     @Test
     public void getAnnouncementById_notExistingId_shouldReturnHttpNotFound() throws Exception {
-        mockMvc.perform(get(baseUri + UUID.randomUUID()))
+        mockMvc.perform(get(baseUri + "42"))
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andReturn();
-    }
-
-    @Test
-    public void getAnnouncementById_illformedId_shouldReturnHttpBadRequest() throws Exception {
-        mockMvc.perform(get(baseUri + illformedUuid))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
                 .andReturn();
     }
 
@@ -106,10 +95,10 @@ class AnnouncementControllerTest {
     }
 
     @Test
-    public void deleteAnnouncement_shouldReturnHttpOk() throws Exception {
-        mockMvc.perform(post(baseUri))
+    public void deleteAnnouncement_notExistingId_shouldReturnHttpNotFound() throws Exception {
+        mockMvc.perform(delete(baseUri + "42"))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNotFound())
                 .andReturn();
     }
 }

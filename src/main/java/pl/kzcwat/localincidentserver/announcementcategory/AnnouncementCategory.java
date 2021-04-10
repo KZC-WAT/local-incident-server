@@ -4,14 +4,13 @@ import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.util.UUID;
 
 @Entity
 @Data
 public class AnnouncementCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private Long id;
 
     @ManyToOne
     private AnnouncementCategory superCategory;

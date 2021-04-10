@@ -6,7 +6,6 @@ import lombok.Getter;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Builder
 @Getter
@@ -14,10 +13,10 @@ public class AnnouncementReplaceRequest {
     private final LocalDateTime expitationDate;
 
     @NotNull
-    private final UUID regionId;
+    private final Long regionId;
 
     @NotNull
-    private final UUID authorId;
+    private final Long authorId;
 
     @NotBlank
     private final String title;

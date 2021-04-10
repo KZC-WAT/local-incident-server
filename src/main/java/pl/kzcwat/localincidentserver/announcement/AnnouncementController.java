@@ -1,6 +1,7 @@
 package pl.kzcwat.localincidentserver.announcement;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -16,7 +17,6 @@ import pl.kzcwat.localincidentserver.announcement.request.AnnouncementReplaceReq
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("api/v1/announcements")
@@ -33,7 +33,7 @@ public class AnnouncementController {
     }
 
     @GetMapping("{announcementId}")
-    public ResponseEntity<?> getAnnouncement(@PathVariable UUID announcementId) {
+    public ResponseEntity<?> getAnnouncement(@PathVariable Long announcementId) {
         try {
             Optional<Announcement> announcementOptional = announcementService.getAnnouncement(announcementId);
             return announcementOptional
@@ -60,11 +60,16 @@ public class AnnouncementController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-    
+
     // TODO: replace, modify endpoints
 
     @DeleteMapping("{announcementId}")
-    public void deleteAnnouncement(@PathVariable UUID announcementId) {
-        announcementService.deleteAnnouncement(announcementId);
+    public ResponseEntity<?> deleteAnnouncement(@PathVariable Long announcementId) {
+        try {
+            announcementService.deleteAnnouncement(announcementId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (EmptyResultDataAccessException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

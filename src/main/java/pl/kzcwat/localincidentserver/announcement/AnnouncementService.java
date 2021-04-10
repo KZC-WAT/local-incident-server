@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import pl.kzcwat.localincidentserver.announcement.request.AnnouncementReplaceRequest;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +18,7 @@ public class AnnouncementService {
         return announcementRepository.findAll(pageable);
     }
 
-    public Optional<Announcement> getAnnouncement(UUID announcementId) {
+    public Optional<Announcement> getAnnouncement(Long announcementId) {
         return announcementRepository.findById(announcementId);
     }
 
@@ -28,7 +27,7 @@ public class AnnouncementService {
         return announcementRepository.save(newAnnouncement);
     }
 
-    public void deleteAnnouncement(UUID announcementId) {
+    public void deleteAnnouncement(Long announcementId) {
         announcementRepository.deleteById(announcementId);
     }
 }

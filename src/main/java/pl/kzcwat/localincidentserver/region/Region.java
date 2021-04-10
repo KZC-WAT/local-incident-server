@@ -16,14 +16,14 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "region_entity")
+@Entity(name = "region")
 public class Region implements Serializable {
     @Id
-    @Column(name = "region_id")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private Long id;
 
-    @Column(name = "region_name", unique = true, nullable = false)
+    @Column(name = "name", unique = true, nullable = false)
     private String name;
 
     @ManyToOne

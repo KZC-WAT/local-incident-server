@@ -17,7 +17,6 @@ import pl.kzcwat.localincidentserver.userprofile.UserProfileRepository;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,9 +37,6 @@ class AnnouncementServiceTest {
 
     @Autowired
     private UserProfileRepository userProfileRepository;
-
-    @Autowired
-    private AnnouncementFactory announcementFactory;
 
     @Test
     public void getAnnouncementsPage_emptyDb_shouldReturnEmptyList() {
@@ -71,7 +67,7 @@ class AnnouncementServiceTest {
     @Test
     public void getAnnouncementById_existingId_shouldReturnSameEntity() {
         Announcement newAnnouncement = announcementRepository.save(AnnouncementSampleDataGenerator.getSampleAnnouncement());
-        UUID newAnnouncementUuid = newAnnouncement.getId();
+        Long newAnnouncementUuid = newAnnouncement.getId();
 
         Optional<Announcement> announcementOptional = announcementService.getAnnouncement(newAnnouncementUuid);
 
@@ -85,7 +81,7 @@ class AnnouncementServiceTest {
 
     @Test
     public void saveAnnouncement_shouldSave() {
-        Region newRegion = regionRepository.save(new Region());
+        Region newRegion = regionRepository.save(Region.builder().name("foo").build());
         UserProfile newUserProfile = userProfileRepository.save(new UserProfile());
 
         AnnouncementReplaceRequest insertedAnnouncement = AnnouncementReplaceRequest.builder()
@@ -107,7 +103,7 @@ class AnnouncementServiceTest {
 
     @Test
     public void deleteAnnouncement_shouldDelete() {
-        Region newRegion = regionRepository.save(new Region());
+        Region newRegion = regionRepository.save(Region.builder().name("foo").build());
         UserProfile newUserProfile = userProfileRepository.save(new UserProfile());
 
         AnnouncementReplaceRequest insertedAnnouncement = AnnouncementReplaceRequest.builder()
@@ -117,9 +113,9 @@ class AnnouncementServiceTest {
                 .content("bar")
                 .build();
 
-        UUID newAnnouncementUuid = announcementService.saveAnnouncement(insertedAnnouncement).getId();
+        Long newAnnouncementId = announcementService.saveAnnouncement(insertedAnnouncement).getId();
 
-        announcementService.deleteAnnouncement(newAnnouncementUuid);
+        announcementService.deleteAnnouncement(newAnnouncementId);
 
         List<Announcement> announcements = announcementService
                 .getAnnouncementsPage(PageRequest.of(0, 5))
