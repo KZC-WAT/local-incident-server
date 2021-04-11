@@ -14,7 +14,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.kzcwat.localincidentserver.announcement.exception.AnnouncementExpirationDateFromPast;
 import pl.kzcwat.localincidentserver.announcement.exception.AnnouncementNotFoundException;
 import pl.kzcwat.localincidentserver.announcement.request.AnnouncementReplaceRequest;
-import pl.kzcwat.localincidentserver.announcement.request.AnnouncementUpdateRequest;
+import pl.kzcwat.localincidentserver.announcement.request.AnnouncementModifyRequest;
 import pl.kzcwat.localincidentserver.announcementcategory.exception.AnnouncementCategoryNotFoundException;
 import pl.kzcwat.localincidentserver.region.exception.RegionNotFoundException;
 import pl.kzcwat.localincidentserver.userprofile.exception.UserProfileNotFoundException;
@@ -84,7 +84,7 @@ public class AnnouncementController {
 
     @PatchMapping("{announcementId}")
     public ResponseEntity<?> modifyAnnouncement(@PathVariable Long announcementId,
-                                                @Valid @RequestBody AnnouncementUpdateRequest updateRequest) {
+                                                @Valid @RequestBody AnnouncementModifyRequest modifyRequest) {
         // TODO: modify (PATCH) implementation
         throw new UnsupportedOperationException("Not implemented yet");
     }
