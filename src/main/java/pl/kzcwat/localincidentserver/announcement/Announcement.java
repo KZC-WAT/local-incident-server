@@ -25,7 +25,7 @@ public class Announcement {
     private LocalDateTime publicationDate = LocalDateTime.now();
 
     @Column(name = "expiration_date", columnDefinition = "TIMESTAMP WITH TIME ZONE")
-    private LocalDateTime expitationDate;
+    private LocalDateTime expirationDate;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)

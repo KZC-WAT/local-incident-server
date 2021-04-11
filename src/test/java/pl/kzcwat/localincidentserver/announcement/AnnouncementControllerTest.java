@@ -95,6 +95,46 @@ class AnnouncementControllerTest {
     }
 
     @Test
+    public void replaceAnnouncement_emptyBody_shouldReturnHttpBadRequest() throws Exception {
+        mockMvc.perform(put(baseUri + "42").content(""))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andReturn();
+    }
+
+    @Test
+    public void replaceAnnouncement_notExistingId_shouldReturnHttpNotFound() throws Exception {
+        Announcement announcement = announcementRepository.save(AnnouncementSampleDataGenerator.getSampleAnnouncement());
+        AnnouncementReplaceRequest announcementReplaceRequest = announcementFactory.mapToReplaceRequest(announcement);
+        String announcementReplaceRequestJson = objectMapper.writeValueAsString(announcementReplaceRequest);
+
+        mockMvc.perform(
+                put(baseUri + "42")
+                        .content(announcementReplaceRequestJson)
+                        .contentType(MediaType.APPLICATION_JSON)
+        )
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andReturn();
+    }
+
+    @Test
+    public void replaceAnnouncement_existingId_shouldReturnHttpOk() throws Exception {
+        Announcement announcement = announcementRepository.save(AnnouncementSampleDataGenerator.getSampleAnnouncement());
+        AnnouncementReplaceRequest announcementReplaceRequest = announcementFactory.mapToReplaceRequest(announcement);
+        String announcementReplaceRequestJson = objectMapper.writeValueAsString(announcementReplaceRequest);
+
+        mockMvc.perform(
+                put(baseUri + announcement.getId())
+                        .content(announcementReplaceRequestJson)
+                        .contentType(MediaType.APPLICATION_JSON)
+        )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    @Test
     public void deleteAnnouncement_notExistingId_shouldReturnHttpNotFound() throws Exception {
         mockMvc.perform(delete(baseUri + "42"))
                 .andDo(print())

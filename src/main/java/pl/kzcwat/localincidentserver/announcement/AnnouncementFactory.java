@@ -29,7 +29,7 @@ public class AnnouncementFactory {
 
         return Announcement.builder()
                 .publicationDate(LocalDateTime.now())
-                .expitationDate(replaceRequest.getExpitationDate())
+                .expirationDate(replaceRequest.getExpirationDate())
                 .region(region)
                 .author(author)
                 .title(replaceRequest.getTitle())
@@ -39,7 +39,7 @@ public class AnnouncementFactory {
 
     public AnnouncementReplaceRequest mapToReplaceRequest(Announcement announcement) {
         return AnnouncementReplaceRequest.builder()
-                .expitationDate(announcement.getExpitationDate())
+                .expirationDate(announcement.getExpirationDate())
                 .regionId(announcement.getRegion().getId())
                 .authorId(announcement.getAuthor().getId())
                 .title(announcement.getTitle())

@@ -7,12 +7,11 @@ import java.util.UUID;
 
 public abstract class AnnouncementSampleDataGenerator {
     public static Announcement getSampleAnnouncement() {
-        String randomName = UUID.randomUUID().toString();
         return Announcement.builder()
-                .region(Region.builder().name(randomName).build())
+                .region(Region.builder().name(UUID.randomUUID().toString()).build())
                 .author(new UserProfile())
-                .title("foo")
-                .content("bar")
+                .title(UUID.randomUUID().toString())
+                .content(UUID.randomUUID().toString())
                 .build();
     }
 }

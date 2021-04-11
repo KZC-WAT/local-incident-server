@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 public class AnnouncementReplaceRequest {
-    private final LocalDateTime expitationDate;
+    private final LocalDateTime expirationDate;
 
     @NotNull
     private final Long regionId;

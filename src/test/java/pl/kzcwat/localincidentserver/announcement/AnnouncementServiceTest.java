@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import pl.kzcwat.localincidentserver.announcement.exception.AnnouncementNotFoundException;
 import pl.kzcwat.localincidentserver.announcement.request.AnnouncementReplaceRequest;
 import pl.kzcwat.localincidentserver.region.Region;
 import pl.kzcwat.localincidentserver.region.RegionRepository;
@@ -22,6 +23,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest
 @Transactional
@@ -37,6 +39,9 @@ class AnnouncementServiceTest {
 
     @Autowired
     private UserProfileRepository userProfileRepository;
+
+    @Autowired
+    private AnnouncementFactory announcementFactory;
 
     @Test
     public void getAnnouncementsPage_emptyDb_shouldReturnEmptyList() {
@@ -99,6 +104,62 @@ class AnnouncementServiceTest {
 
         assertThat(announcements, Matchers.hasSize(1));
         assertEquals(newAnnouncement, announcements.get(0));
+    }
+
+    @Test
+    public void replaceAnnouncement_shouldReplaceSpecificFields() {
+        Announcement insertedAnnouncement = announcementRepository.save(AnnouncementSampleDataGenerator.getSampleAnnouncement());
+        Long replacedAnnouncementId = insertedAnnouncement.getId();
+
+        Region newRegion = regionRepository.save(Region.builder().name("replaced").build());
+        UserProfile newUserProfile = userProfileRepository.save(new UserProfile());
+
+        AnnouncementReplaceRequest replaceRequest = AnnouncementReplaceRequest.builder()
+                .regionId(newRegion.getId())
+                .authorId(newUserProfile.getId())
+                .title("replaced_title")
+                .content("replaced_content")
+                .build();
+
+        announcementService.replaceAnnouncement(replacedAnnouncementId, replaceRequest);
+
+        try {
+            Announcement mappedReplaceRequest = announcementFactory.mapToEntity(replaceRequest);
+            Announcement announcementAfterReplace = announcementRepository.findById(replacedAnnouncementId)
+                    .orElseThrow(AnnouncementNotFoundException::new);
+
+            assertEquals(mappedReplaceRequest.getExpirationDate(), announcementAfterReplace.getExpirationDate());
+            assertEquals(mappedReplaceRequest.getTitle(), announcementAfterReplace.getTitle());
+            assertEquals(mappedReplaceRequest.getContent(), announcementAfterReplace.getContent());
+            assertEquals(mappedReplaceRequest.getAuthor(), announcementAfterReplace.getAuthor());
+            assertEquals(mappedReplaceRequest.getRegion(), announcementAfterReplace.getRegion());
+        } catch (AnnouncementNotFoundException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void replaceAnnouncement_shouldNotInsertNewRecords() {
+        Announcement insertedAnnouncement
+                = announcementRepository.save(AnnouncementSampleDataGenerator.getSampleAnnouncement());
+
+        Long replacedAnnouncementId = insertedAnnouncement.getId();
+        long announcementsCountBeforeReplace = announcementRepository.count();
+
+        Region newRegion = regionRepository.save(Region.builder().name("foo").build());
+        UserProfile newUserProfile = userProfileRepository.save(new UserProfile());
+
+        AnnouncementReplaceRequest replaceRequest = AnnouncementReplaceRequest.builder()
+                .regionId(newRegion.getId())
+                .authorId(newUserProfile.getId())
+                .title("foo")
+                .content("bar")
+                .build();
+
+        announcementService.replaceAnnouncement(replacedAnnouncementId, replaceRequest);
+
+        long announcementsCountAfterReplace = announcementRepository.count();
+        assertEquals(announcementsCountBeforeReplace, announcementsCountAfterReplace);
     }
 
     @Test
