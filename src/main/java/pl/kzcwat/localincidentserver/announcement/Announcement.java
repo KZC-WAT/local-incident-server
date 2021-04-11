@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pl.kzcwat.localincidentserver.announcementcategory.AnnouncementCategory;
 import pl.kzcwat.localincidentserver.region.Region;
 import pl.kzcwat.localincidentserver.userprofile.UserProfile;
 
@@ -20,11 +21,11 @@ public class Announcement {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "publication_date", columnDefinition = "TIMESTAMP WITH TIME ZONE", nullable = false)
+    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE", nullable = false)
     @Builder.Default
     private LocalDateTime publicationDate = LocalDateTime.now();
 
-    @Column(name = "expiration_date", columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private LocalDateTime expirationDate;
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -34,6 +35,10 @@ public class Announcement {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
     private UserProfile author;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(nullable = false)
+    private AnnouncementCategory announcementCategory;
 
     @Column(nullable = false)
     private String title;

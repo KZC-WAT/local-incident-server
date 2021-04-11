@@ -1,5 +1,6 @@
 package pl.kzcwat.localincidentserver.announcement;
 
+import pl.kzcwat.localincidentserver.announcementcategory.AnnouncementCategory;
 import pl.kzcwat.localincidentserver.region.Region;
 import pl.kzcwat.localincidentserver.userprofile.UserProfile;
 
@@ -10,6 +11,7 @@ public abstract class AnnouncementSampleDataGenerator {
         return Announcement.builder()
                 .region(Region.builder().name(UUID.randomUUID().toString()).build())
                 .author(new UserProfile())
+                .announcementCategory(AnnouncementCategory.builder().name(UUID.randomUUID().toString()).build())
                 .title(UUID.randomUUID().toString())
                 .content(UUID.randomUUID().toString())
                 .build();

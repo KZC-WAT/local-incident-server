@@ -8,22 +8,25 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import pl.kzcwat.localincidentserver.announcement.exception.AnnouncementExpirationDateFromPast;
 import pl.kzcwat.localincidentserver.announcement.exception.AnnouncementNotFoundException;
 import pl.kzcwat.localincidentserver.announcement.request.AnnouncementReplaceRequest;
+import pl.kzcwat.localincidentserver.announcementcategory.AnnouncementCategory;
+import pl.kzcwat.localincidentserver.announcementcategory.AnnouncementCategoryRepository;
 import pl.kzcwat.localincidentserver.region.Region;
 import pl.kzcwat.localincidentserver.region.RegionRepository;
 import pl.kzcwat.localincidentserver.userprofile.UserProfile;
 import pl.kzcwat.localincidentserver.userprofile.UserProfileRepository;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -39,6 +42,9 @@ class AnnouncementServiceTest {
 
     @Autowired
     private UserProfileRepository userProfileRepository;
+
+    @Autowired
+    private AnnouncementCategoryRepository announcementCategoryRepository;
 
     @Autowired
     private AnnouncementFactory announcementFactory;
@@ -88,10 +94,13 @@ class AnnouncementServiceTest {
     public void saveAnnouncement_shouldSave() {
         Region newRegion = regionRepository.save(Region.builder().name("foo").build());
         UserProfile newUserProfile = userProfileRepository.save(new UserProfile());
+        AnnouncementCategory newAnnouncementCategory
+                = announcementCategoryRepository.save(AnnouncementCategory.builder().name("cat").build());
 
         AnnouncementReplaceRequest insertedAnnouncement = AnnouncementReplaceRequest.builder()
                 .regionId(newRegion.getId())
                 .authorId(newUserProfile.getId())
+                .categoryId(newAnnouncementCategory.getId())
                 .title("foo")
                 .content("bar")
                 .build();
@@ -111,14 +120,17 @@ class AnnouncementServiceTest {
         Announcement insertedAnnouncement = announcementRepository.save(AnnouncementSampleDataGenerator.getSampleAnnouncement());
         Long replacedAnnouncementId = insertedAnnouncement.getId();
 
-        Region newRegion = regionRepository.save(Region.builder().name("replaced").build());
+        Region newRegion = regionRepository.save(Region.builder().name("foo").build());
         UserProfile newUserProfile = userProfileRepository.save(new UserProfile());
+        AnnouncementCategory newAnnouncementCategory
+                = announcementCategoryRepository.save(AnnouncementCategory.builder().name("cat").build());
 
         AnnouncementReplaceRequest replaceRequest = AnnouncementReplaceRequest.builder()
                 .regionId(newRegion.getId())
                 .authorId(newUserProfile.getId())
-                .title("replaced_title")
-                .content("replaced_content")
+                .categoryId(newAnnouncementCategory.getId())
+                .title("foo")
+                .content("bar")
                 .build();
 
         announcementService.replaceAnnouncement(replacedAnnouncementId, replaceRequest);
@@ -148,10 +160,13 @@ class AnnouncementServiceTest {
 
         Region newRegion = regionRepository.save(Region.builder().name("foo").build());
         UserProfile newUserProfile = userProfileRepository.save(new UserProfile());
+        AnnouncementCategory newAnnouncementCategory
+                = announcementCategoryRepository.save(AnnouncementCategory.builder().name("cat").build());
 
         AnnouncementReplaceRequest replaceRequest = AnnouncementReplaceRequest.builder()
                 .regionId(newRegion.getId())
                 .authorId(newUserProfile.getId())
+                .categoryId(newAnnouncementCategory.getId())
                 .title("foo")
                 .content("bar")
                 .build();
@@ -163,13 +178,40 @@ class AnnouncementServiceTest {
     }
 
     @Test
+    public void replaceAnnouncement_expirationDateFromPast_shouldThrow() {
+        Announcement insertedAnnouncement
+                = announcementRepository.save(AnnouncementSampleDataGenerator.getSampleAnnouncement());
+        Long replacedAnnouncementId = insertedAnnouncement.getId();
+
+        Region newRegion = regionRepository.save(Region.builder().name("foo").build());
+        UserProfile newUserProfile = userProfileRepository.save(new UserProfile());
+        AnnouncementCategory newAnnouncementCategory
+                = announcementCategoryRepository.save(AnnouncementCategory.builder().name("cat").build());
+
+        AnnouncementReplaceRequest replaceRequest = AnnouncementReplaceRequest.builder()
+                .regionId(newRegion.getId())
+                .authorId(newUserProfile.getId())
+                .categoryId(newAnnouncementCategory.getId())
+                .expirationDate(LocalDateTime.now().minusDays(42))
+                .title("foo")
+                .content("bar")
+                .build();
+
+        assertThrows(AnnouncementExpirationDateFromPast.class,
+                () -> announcementService.replaceAnnouncement(replacedAnnouncementId, replaceRequest));
+    }
+
+    @Test
     public void deleteAnnouncement_shouldDelete() {
         Region newRegion = regionRepository.save(Region.builder().name("foo").build());
         UserProfile newUserProfile = userProfileRepository.save(new UserProfile());
+        AnnouncementCategory newAnnouncementCategory
+                = announcementCategoryRepository.save(AnnouncementCategory.builder().name("cat").build());
 
         AnnouncementReplaceRequest insertedAnnouncement = AnnouncementReplaceRequest.builder()
                 .regionId(newRegion.getId())
                 .authorId(newUserProfile.getId())
+                .categoryId(newAnnouncementCategory.getId())
                 .title("foo")
                 .content("bar")
                 .build();

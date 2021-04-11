@@ -18,6 +18,9 @@ public class AnnouncementReplaceRequest {
     @NotNull
     private final Long authorId;
 
+    @NotNull
+    private final Long categoryId;
+
     @NotBlank
     private final String title;
 

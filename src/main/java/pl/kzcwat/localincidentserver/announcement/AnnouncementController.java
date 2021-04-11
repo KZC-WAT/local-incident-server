@@ -11,8 +11,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import pl.kzcwat.localincidentserver.announcement.exception.AnnouncementExpirationDateFromPast;
 import pl.kzcwat.localincidentserver.announcement.exception.AnnouncementNotFoundException;
 import pl.kzcwat.localincidentserver.announcement.request.AnnouncementReplaceRequest;
+import pl.kzcwat.localincidentserver.announcement.request.AnnouncementUpdateRequest;
+import pl.kzcwat.localincidentserver.announcementcategory.exception.AnnouncementCategoryNotFoundException;
 import pl.kzcwat.localincidentserver.region.exception.RegionNotFoundException;
 import pl.kzcwat.localincidentserver.userprofile.exception.UserProfileNotFoundException;
 
@@ -42,9 +45,9 @@ public class AnnouncementController {
                     .map(announcement -> new ResponseEntity<>(announcement, HttpStatus.OK))
                     .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (AnnouncementNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -58,8 +61,10 @@ public class AnnouncementController {
                     .buildAndExpand(newAnnouncement.getId())
                     .toUri();
             return ResponseEntity.created(location).body(newAnnouncement);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (AnnouncementCategoryNotFoundException | RegionNotFoundException | UserProfileNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (AnnouncementExpirationDateFromPast e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -69,14 +74,20 @@ public class AnnouncementController {
         try {
             announcementService.replaceAnnouncement(announcementId, replaceRequest);
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (AnnouncementNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (RegionNotFoundException | UserProfileNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (AnnouncementNotFoundException | AnnouncementCategoryNotFoundException
+                | RegionNotFoundException | UserProfileNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (AnnouncementExpirationDateFromPast e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
-    // TODO: modify endpoints
+    @PatchMapping("{announcementId}")
+    public ResponseEntity<?> modifyAnnouncement(@PathVariable Long announcementId,
+                                                @Valid @RequestBody AnnouncementUpdateRequest updateRequest) {
+        // TODO: modify (PATCH) implementation
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 
     @DeleteMapping("{announcementId}")
     public ResponseEntity<?> deleteAnnouncement(@PathVariable Long announcementId) {
@@ -84,7 +95,7 @@ public class AnnouncementController {
             announcementService.deleteAnnouncement(announcementId);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EmptyResultDataAccessException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 }
