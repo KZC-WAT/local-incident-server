@@ -3,6 +3,7 @@ package pl.kzcwat.localincidentserver.announcement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import pl.kzcwat.localincidentserver.announcement.exception.AnnouncementExpirationDateFromPast;
+import pl.kzcwat.localincidentserver.announcement.request.AnnouncementModifyRequest;
 import pl.kzcwat.localincidentserver.announcement.request.AnnouncementReplaceRequest;
 import pl.kzcwat.localincidentserver.announcementcategory.AnnouncementCategory;
 import pl.kzcwat.localincidentserver.announcementcategory.AnnouncementCategoryRepository;
@@ -61,5 +62,40 @@ public class AnnouncementFactory {
                 .title(announcement.getTitle())
                 .content(announcement.getContent())
                 .build();
+    }
+
+    public Announcement updateAnnouncement(Announcement updatedAnnouncement, AnnouncementModifyRequest modifyRequest) {
+        if (modifyRequest.getExpirationDate().isPresent()) {
+            if (modifyRequest.getExpirationDate().get().isBefore(LocalDateTime.now())) {
+                throw new AnnouncementExpirationDateFromPast();
+            } else {
+                updatedAnnouncement.setExpirationDate(modifyRequest.getExpirationDate().get());
+            }
+        }
+
+        if (modifyRequest.getRegionId().isPresent()) {
+            Region region = regionRepository.findById(modifyRequest.getRegionId().get())
+                    .orElseThrow(RegionNotFoundException::new);
+            updatedAnnouncement.setRegion(region);
+        }
+        if (modifyRequest.getAuthorId().isPresent()) {
+            UserProfile author = userProfileRepository.findById(modifyRequest.getAuthorId().get())
+                    .orElseThrow(UserProfileNotFoundException::new);
+            updatedAnnouncement.setAuthor(author);
+        }
+        if (modifyRequest.getCategoryId().isPresent()) {
+            AnnouncementCategory category = announcementCategoryRepository.findById(modifyRequest.getCategoryId().get())
+                    .orElseThrow(AnnouncementCategoryNotFoundException::new);
+            updatedAnnouncement.setCategory(category);
+        }
+
+        if (modifyRequest.getTitle().isPresent()) {
+            updatedAnnouncement.setTitle(modifyRequest.getTitle().get());
+        }
+        if (modifyRequest.getContent().isPresent()) {
+            updatedAnnouncement.setContent(modifyRequest.getContent().get());
+        }
+
+        return updatedAnnouncement;
     }
 }
