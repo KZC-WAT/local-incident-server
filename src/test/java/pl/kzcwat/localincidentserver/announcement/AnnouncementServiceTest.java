@@ -201,6 +201,8 @@ class AnnouncementServiceTest {
                 () -> announcementService.replaceAnnouncement(replacedAnnouncementId, replaceRequest));
     }
 
+    // TODO: Testing modifying announcements (PATCH method)!
+
     @Test
     public void deleteAnnouncement_shouldDelete() {
         Region newRegion = regionRepository.save(Region.builder().name("foo").build());

@@ -38,7 +38,7 @@ public class Announcement {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
-    private AnnouncementCategory announcementCategory;
+    private AnnouncementCategory category;
 
     @Column(nullable = false)
     private String title;

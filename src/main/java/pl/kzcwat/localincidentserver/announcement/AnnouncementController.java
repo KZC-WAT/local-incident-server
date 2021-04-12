@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.kzcwat.localincidentserver.announcement.exception.AnnouncementExpirationDateFromPast;
 import pl.kzcwat.localincidentserver.announcement.exception.AnnouncementNotFoundException;
-import pl.kzcwat.localincidentserver.announcement.request.AnnouncementReplaceRequest;
 import pl.kzcwat.localincidentserver.announcement.request.AnnouncementModifyRequest;
+import pl.kzcwat.localincidentserver.announcement.request.AnnouncementReplaceRequest;
 import pl.kzcwat.localincidentserver.announcementcategory.exception.AnnouncementCategoryNotFoundException;
 import pl.kzcwat.localincidentserver.region.exception.RegionNotFoundException;
 import pl.kzcwat.localincidentserver.userprofile.exception.UserProfileNotFoundException;
@@ -72,8 +72,7 @@ public class AnnouncementController {
     public ResponseEntity<?> replaceAnnouncement(@PathVariable Long announcementId,
                                                  @Valid @RequestBody AnnouncementReplaceRequest replaceRequest) {
         try {
-            announcementService.replaceAnnouncement(announcementId, replaceRequest);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(announcementService.replaceAnnouncement(announcementId, replaceRequest), HttpStatus.OK);
         } catch (AnnouncementNotFoundException | AnnouncementCategoryNotFoundException
                 | RegionNotFoundException | UserProfileNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -85,8 +84,14 @@ public class AnnouncementController {
     @PatchMapping("{announcementId}")
     public ResponseEntity<?> modifyAnnouncement(@PathVariable Long announcementId,
                                                 @Valid @RequestBody AnnouncementModifyRequest modifyRequest) {
-        // TODO: modify (PATCH) implementation
-        throw new UnsupportedOperationException("Not implemented yet");
+        try {
+            return new ResponseEntity<>(announcementService.modifyAnnouncement(announcementId, modifyRequest), HttpStatus.OK);
+        } catch (AnnouncementNotFoundException | AnnouncementCategoryNotFoundException
+                | RegionNotFoundException | UserProfileNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (AnnouncementExpirationDateFromPast e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @DeleteMapping("{announcementId}")

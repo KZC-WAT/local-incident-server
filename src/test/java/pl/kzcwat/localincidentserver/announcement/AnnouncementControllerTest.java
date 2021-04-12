@@ -134,6 +134,8 @@ class AnnouncementControllerTest {
                 .andReturn();
     }
 
+    // TODO: Testing PATCH method!
+
     @Test
     public void deleteAnnouncement_notExistingId_shouldReturnHttpNotFound() throws Exception {
         mockMvc.perform(delete(baseUri + "42"))

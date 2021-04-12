@@ -46,7 +46,7 @@ public class AnnouncementFactory {
                 .expirationDate(replaceRequest.getExpirationDate())
                 .region(region)
                 .author(author)
-                .announcementCategory(announcementCategory)
+                .category(announcementCategory)
                 .title(replaceRequest.getTitle())
                 .content(replaceRequest.getContent())
                 .build();
@@ -57,7 +57,7 @@ public class AnnouncementFactory {
                 .expirationDate(announcement.getExpirationDate())
                 .regionId(announcement.getRegion().getId())
                 .authorId(announcement.getAuthor().getId())
-                .categoryId(announcement.getAnnouncementCategory().getId())
+                .categoryId(announcement.getCategory().getId())
                 .title(announcement.getTitle())
                 .content(announcement.getContent())
                 .build();
