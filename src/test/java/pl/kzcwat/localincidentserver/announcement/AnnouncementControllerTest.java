@@ -2,12 +2,14 @@ package pl.kzcwat.localincidentserver.announcement;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import pl.kzcwat.localincidentserver.announcement.request.AnnouncementModifyRequest;
 import pl.kzcwat.localincidentserver.announcement.request.AnnouncementReplaceRequest;
 
 import javax.transaction.Transactional;
@@ -134,7 +136,55 @@ class AnnouncementControllerTest {
                 .andReturn();
     }
 
-    // TODO: Testing PATCH method!
+    @Test
+    public void modifyAnnouncement_existingIdNoContent_shouldReturnHttpBadRequest() throws Exception {
+        mockMvc.perform(patch(baseUri + "42"))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andReturn();
+    }
+
+    @Test
+    public void modifyAnnouncement_notExistingIdEmptyJson_shouldReturnHttpNotFound() throws Exception {
+        mockMvc.perform(patch(baseUri + "42").content("{}").contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andReturn();
+    }
+
+    @Test
+    public void modifyAnnouncement_existingIdEmptyJson_shouldReturnHttpOk() throws Exception {
+        Announcement announcement = announcementRepository.save(AnnouncementSampleDataGenerator.getSampleAnnouncement());
+
+        mockMvc.perform(
+                patch(baseUri + announcement.getId())
+                        .content("{}")
+                        .contentType(MediaType.APPLICATION_JSON)
+        )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    @Test
+    public void modifyAnnouncement_existingIdValidJson_shouldReturnHttpOk() throws Exception {
+        Announcement announcement = announcementRepository.save(AnnouncementSampleDataGenerator.getSampleAnnouncement());
+
+        AnnouncementModifyRequest announcementModifyRequest = new AnnouncementModifyRequest();
+        announcementModifyRequest.setTitle(JsonNullable.of("new_title"));
+        announcementModifyRequest.setContent(JsonNullable.of("new_content"));
+
+        String announcementModifyRequestJson = objectMapper.writeValueAsString(announcementModifyRequest);
+
+        mockMvc.perform(
+                patch(baseUri + announcement.getId())
+                        .content(announcementModifyRequestJson)
+                        .contentType(MediaType.APPLICATION_JSON)
+        )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+    }
 
     @Test
     public void deleteAnnouncement_notExistingId_shouldReturnHttpNotFound() throws Exception {

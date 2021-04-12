@@ -3,6 +3,7 @@ package pl.kzcwat.localincidentserver.announcement;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import pl.kzcwat.localincidentserver.announcement.exception.AnnouncementExpirationDateFromPast;
 import pl.kzcwat.localincidentserver.announcement.exception.AnnouncementNotFoundException;
+import pl.kzcwat.localincidentserver.announcement.request.AnnouncementModifyRequest;
 import pl.kzcwat.localincidentserver.announcement.request.AnnouncementReplaceRequest;
 import pl.kzcwat.localincidentserver.announcementcategory.AnnouncementCategory;
 import pl.kzcwat.localincidentserver.announcementcategory.AnnouncementCategoryRepository;
@@ -201,7 +203,52 @@ class AnnouncementServiceTest {
                 () -> announcementService.replaceAnnouncement(replacedAnnouncementId, replaceRequest));
     }
 
-    // TODO: Testing modifying announcements (PATCH method)!
+    @Test
+    public void modifyAnnouncement_someFieldsProvided_shouldModifyOnlyGivenFields() {
+        Announcement announcement = Announcement.builder()
+                .region(Region.builder().name("old_region").build())
+                .author(new UserProfile())
+                .category(AnnouncementCategory.builder().name("old_category").build())
+                .title("old_title")
+                .content("old_content")
+                .build();
+
+        Announcement insertedAnnouncement = announcementRepository.save(announcement);
+        Long announcementId = insertedAnnouncement.getId();
+
+        AnnouncementModifyRequest modifyRequest = new AnnouncementModifyRequest();
+        modifyRequest.setTitle(JsonNullable.of("new_title"));
+        modifyRequest.setContent(JsonNullable.of("new_content"));
+
+        Announcement modifiedAnnouncement = announcementService.modifyAnnouncement(announcementId, modifyRequest);
+
+        assertEquals("old_region", modifiedAnnouncement.getRegion().getName());
+        assertEquals("old_category", modifiedAnnouncement.getCategory().getName());
+        assertEquals("new_title", modifiedAnnouncement.getTitle());
+        assertEquals("new_content", modifiedAnnouncement.getContent());
+    }
+
+    @Test
+    public void modifyAnnouncement_noFieldsProvided_shouldNotModify() {
+        Announcement announcement = Announcement.builder()
+                .region(Region.builder().name("old_region").build())
+                .author(new UserProfile())
+                .category(AnnouncementCategory.builder().name("old_category").build())
+                .title("old_title")
+                .content("old_content")
+                .build();
+
+        Announcement insertedAnnouncement = announcementRepository.save(announcement);
+        Long announcementId = insertedAnnouncement.getId();
+
+        AnnouncementModifyRequest modifyRequest = new AnnouncementModifyRequest();
+        Announcement modifiedAnnouncement = announcementService.modifyAnnouncement(announcementId, modifyRequest);
+
+        assertEquals("old_region", modifiedAnnouncement.getRegion().getName());
+        assertEquals("old_category", modifiedAnnouncement.getCategory().getName());
+        assertEquals("old_title", modifiedAnnouncement.getTitle());
+        assertEquals("old_content", modifiedAnnouncement.getContent());
+    }
 
     @Test
     public void deleteAnnouncement_shouldDelete() {
