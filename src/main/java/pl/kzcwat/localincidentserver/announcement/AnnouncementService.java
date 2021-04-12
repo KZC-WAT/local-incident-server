@@ -7,9 +7,6 @@ import org.springframework.stereotype.Service;
 import pl.kzcwat.localincidentserver.announcement.exception.AnnouncementNotFoundException;
 import pl.kzcwat.localincidentserver.announcement.request.AnnouncementModifyRequest;
 import pl.kzcwat.localincidentserver.announcement.request.AnnouncementReplaceRequest;
-import pl.kzcwat.localincidentserver.announcementcategory.AnnouncementCategoryRepository;
-import pl.kzcwat.localincidentserver.region.RegionRepository;
-import pl.kzcwat.localincidentserver.userprofile.UserProfileRepository;
 
 import javax.transaction.Transactional;
 import java.util.Optional;
@@ -19,10 +16,6 @@ import java.util.Optional;
 public class AnnouncementService {
     private final AnnouncementRepository announcementRepository;
     private final AnnouncementFactory announcementFactory;
-
-    private final RegionRepository regionRepository;
-    private final UserProfileRepository userProfileRepository;
-    private final AnnouncementCategoryRepository announcementCategoryRepository;
 
     @Transactional
     public Page<Announcement> getAnnouncementsPage(Pageable pageable) {
