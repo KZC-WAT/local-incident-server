@@ -193,4 +193,15 @@ class AnnouncementControllerTest {
                 .andExpect(status().isNotFound())
                 .andReturn();
     }
+
+    @Test
+    public void deleteAnnouncement_existingId_shouldReturnHttpOk() throws Exception {
+        Announcement newAnnouncement = announcementRepository.save(getSampleAnnouncement());
+        Long newAnnouncementId = newAnnouncement.getId();
+
+        mockMvc.perform(delete(baseUri + newAnnouncementId))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+    }
 }
