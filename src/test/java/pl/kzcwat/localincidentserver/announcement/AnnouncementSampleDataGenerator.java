@@ -11,7 +11,7 @@ public abstract class AnnouncementSampleDataGenerator {
         return Announcement.builder()
                 .region(Region.builder().name(UUID.randomUUID().toString()).build())
                 .author(new UserProfile())
-                .announcementCategory(AnnouncementCategory.builder().name(UUID.randomUUID().toString()).build())
+                .category(AnnouncementCategory.builder().name(UUID.randomUUID().toString()).build())
                 .title(UUID.randomUUID().toString())
                 .content(UUID.randomUUID().toString())
                 .build();
