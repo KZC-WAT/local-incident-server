@@ -1,5 +1,6 @@
 package pl.kzcwat.localincidentserver.announcementcategory;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,7 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import pl.kzcwat.localincidentserver.announcement.Announcement;
+import pl.kzcwat.localincidentserver.announcementcategory.exception.AnnouncementCategoryNotFoundException;
+import pl.kzcwat.localincidentserver.announcementcategory.request.AnnouncementCategoryReplaceRequest;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -15,7 +17,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
@@ -68,5 +72,32 @@ class AnnouncementCategoryServiceTest {
         } else {
             Assertions.fail();
         }
+    }
+
+    @Test
+    public void saveAnnouncementCategory_shouldSave() {
+        AnnouncementCategoryReplaceRequest replaceRequest = AnnouncementCategoryReplaceRequest.builder()
+                .name("foo")
+                .build();
+
+        AnnouncementCategory newAnnouncementCategory = announcementCategoryService.saveAnnouncementCategory(replaceRequest);
+
+        List<AnnouncementCategory> announcementCategories = announcementCategoryService
+                .getAnnouncementCategoriesPage(PageRequest.of(0, 5))
+                .toList();
+
+        assertThat(announcementCategories, Matchers.hasSize(1));
+        assertEquals(newAnnouncementCategory, announcementCategories.get(0));
+    }
+
+    @Test
+    public void saveAnnouncementCategory_notExistingSuperCategoryId_shouldThrow() {
+        AnnouncementCategoryReplaceRequest replaceRequest = AnnouncementCategoryReplaceRequest.builder()
+                .name("foo")
+                .superCategoryId(42L)
+                .build();
+
+        assertThrows(AnnouncementCategoryNotFoundException.class,
+                () -> announcementCategoryService.saveAnnouncementCategory(replaceRequest));
     }
 }

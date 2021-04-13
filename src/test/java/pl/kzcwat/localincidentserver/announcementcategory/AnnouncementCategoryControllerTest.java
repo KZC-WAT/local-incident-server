@@ -1,16 +1,17 @@
 package pl.kzcwat.localincidentserver.announcementcategory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import pl.kzcwat.localincidentserver.announcementcategory.request.AnnouncementCategoryReplaceRequest;
 
 import javax.transaction.Transactional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -27,6 +28,9 @@ class AnnouncementCategoryControllerTest {
 
     @Autowired
     private AnnouncementCategoryRepository announcementCategoryRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     public void getAnnouncementCategoriesPage_shouldReturnHttpOk() throws Exception {
@@ -57,7 +61,37 @@ class AnnouncementCategoryControllerTest {
                 .andReturn();
     }
 
-    // TODO: save, replace, modify methods tests
+    @Test
+    public void saveAnnouncementCategory_emptyBody_shouldReturnHttpBadRequest() throws Exception {
+        mockMvc.perform(post(baseUri).content(""))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andReturn();
+    }
+
+    @Test
+    public void saveAnnouncementCategory_emptyJson_shouldReturnHttpBadRequest() throws Exception {
+        mockMvc.perform(post(baseUri).content("{}").contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andReturn();
+    }
+
+    @Test
+    public void saveAnnouncementCategory_validJson_shouldReturnHttpOk() throws Exception {
+        AnnouncementCategoryReplaceRequest replaceRequest = AnnouncementCategoryReplaceRequest.builder()
+                .name("foo")
+                .build();
+
+        String replaceRequestJson = objectMapper.writeValueAsString(replaceRequest);
+
+        mockMvc.perform(post(baseUri).content(replaceRequestJson).contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn();
+    }
+
+    // TODO: replace, modify methods tests
 
     @Test
     public void deleteAnnouncementCategory_notExistingId_shouldReturnHttpNotFound() throws Exception {

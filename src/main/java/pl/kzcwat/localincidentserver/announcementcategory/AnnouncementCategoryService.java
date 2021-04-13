@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import pl.kzcwat.localincidentserver.announcementcategory.request.AnnouncementCategoryReplaceRequest;
 
 import java.util.Optional;
 
@@ -11,6 +12,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AnnouncementCategoryService {
     private final AnnouncementCategoryRepository announcementCategoryRepository;
+    private final AnnouncementCategoryFactory announcementCategoryFactory;
 
     public Page<AnnouncementCategory> getAnnouncementCategoriesPage(Pageable pageable) {
         return announcementCategoryRepository.findAll(pageable);
@@ -22,5 +24,10 @@ public class AnnouncementCategoryService {
 
     public void deleteAnnouncementCategory(Long announcementCategoryId) {
         announcementCategoryRepository.deleteById(announcementCategoryId);
+    }
+
+    public AnnouncementCategory saveAnnouncementCategory(AnnouncementCategoryReplaceRequest replaceRequest) {
+        AnnouncementCategory newAnnouncementCategory = announcementCategoryFactory.mapToEntity(replaceRequest);
+        return announcementCategoryRepository.save(newAnnouncementCategory);
     }
 }
