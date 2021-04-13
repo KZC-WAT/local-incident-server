@@ -62,7 +62,7 @@ public class AnnouncementCategoryController {
         }
     }
 
-    // TODO: save, replace, modify methods
+    // TODO: replace, modify methods
 
     @DeleteMapping("{announcementCategoryId}")
     public ResponseEntity<?> deleteAnnouncementCategory(@PathVariable Long announcementCategoryId) {
