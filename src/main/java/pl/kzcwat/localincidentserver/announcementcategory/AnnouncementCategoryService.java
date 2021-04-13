@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import pl.kzcwat.localincidentserver.announcementcategory.exception.AnnouncementCategoryNotFoundException;
+import pl.kzcwat.localincidentserver.announcementcategory.request.AnnouncementCategoryModifyRequest;
 import pl.kzcwat.localincidentserver.announcementcategory.request.AnnouncementCategoryReplaceRequest;
 
 import javax.transaction.Transactional;
@@ -29,6 +31,31 @@ public class AnnouncementCategoryService {
     public AnnouncementCategory saveAnnouncementCategory(AnnouncementCategoryReplaceRequest replaceRequest) {
         AnnouncementCategory newAnnouncementCategory = announcementCategoryFactory.mapToEntity(replaceRequest);
         return announcementCategoryRepository.save(newAnnouncementCategory);
+    }
+
+    @Transactional
+    public AnnouncementCategory replaceAnnouncementCategory(Long announcementCategoryId,
+                                                            AnnouncementCategoryReplaceRequest replaceRequest) {
+        announcementCategoryRepository
+                .findById(announcementCategoryId)
+                .orElseThrow(AnnouncementCategoryNotFoundException::new);
+
+        AnnouncementCategory updatedAnnouncementCategory = announcementCategoryFactory.mapToEntity(replaceRequest);
+        updatedAnnouncementCategory.setId(announcementCategoryId);
+
+        return announcementCategoryRepository.save(updatedAnnouncementCategory);
+    }
+
+    @Transactional
+    public AnnouncementCategory modifyAnnouncementCategory(Long announcementCategoryId,
+                                                           AnnouncementCategoryModifyRequest modifyRequest) {
+        AnnouncementCategory announcementCategoryBeingModified =
+                announcementCategoryRepository.findById(announcementCategoryId)
+                        .orElseThrow(AnnouncementCategoryNotFoundException::new);
+
+        AnnouncementCategory updatedAnnouncementCategory =
+                announcementCategoryFactory.updateAnnouncementCategory(announcementCategoryBeingModified, modifyRequest);
+        return announcementCategoryRepository.save(updatedAnnouncementCategory);
     }
 
     @Transactional

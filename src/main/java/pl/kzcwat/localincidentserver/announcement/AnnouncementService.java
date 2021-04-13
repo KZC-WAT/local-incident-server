@@ -34,11 +34,6 @@ public class AnnouncementService {
     }
 
     @Transactional
-    public void deleteAnnouncement(Long announcementId) {
-        announcementRepository.deleteById(announcementId);
-    }
-
-    @Transactional
     public Announcement replaceAnnouncement(Long announcementId, AnnouncementReplaceRequest replaceRequest) {
         announcementRepository.findById(announcementId).orElseThrow(AnnouncementNotFoundException::new);
 
@@ -48,11 +43,17 @@ public class AnnouncementService {
         return announcementRepository.save(newAnnouncementVersion);
     }
 
+    @Transactional
     public Announcement modifyAnnouncement(Long announcementId, AnnouncementModifyRequest modifyRequest) {
         Announcement announcementBeingModified = announcementRepository.findById(announcementId)
                 .orElseThrow(AnnouncementNotFoundException::new);
 
         Announcement updatedAnnouncement = announcementFactory.updateAnnouncement(announcementBeingModified, modifyRequest);
         return announcementRepository.save(updatedAnnouncement);
+    }
+
+    @Transactional
+    public void deleteAnnouncement(Long announcementId) {
+        announcementRepository.deleteById(announcementId);
     }
 }

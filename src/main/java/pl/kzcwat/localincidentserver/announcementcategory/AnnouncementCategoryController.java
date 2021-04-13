@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.kzcwat.localincidentserver.announcementcategory.exception.AnnouncementCategoryNotFoundException;
+import pl.kzcwat.localincidentserver.announcementcategory.request.AnnouncementCategoryModifyRequest;
 import pl.kzcwat.localincidentserver.announcementcategory.request.AnnouncementCategoryReplaceRequest;
 
 import javax.validation.Valid;
@@ -62,7 +63,26 @@ public class AnnouncementCategoryController {
         }
     }
 
-    // TODO: replace, modify methods
+    @PutMapping("{announcementCategoryId}")
+    public ResponseEntity<?> replaceAnnouncementCategory(@PathVariable Long announcementCategoryId,
+                                                         @RequestBody @Valid AnnouncementCategoryReplaceRequest replaceRequest) {
+        try {
+            return new ResponseEntity<>(
+                    announcementCategoryService.replaceAnnouncementCategory(announcementCategoryId, replaceRequest), HttpStatus.OK);
+        } catch (AnnouncementCategoryNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PatchMapping("{announcementCategoryId}")
+    public ResponseEntity<?> modifyAnnouncementCategory(@PathVariable Long announcementCategoryId,
+                                                        @RequestBody @Valid AnnouncementCategoryModifyRequest modifyRequest) {
+        try {
+            return new ResponseEntity<>(announcementCategoryService.modifyAnnouncementCategory(announcementCategoryId, modifyRequest), HttpStatus.OK);
+        } catch (AnnouncementCategoryNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
     @DeleteMapping("{announcementCategoryId}")
     public ResponseEntity<?> deleteAnnouncementCategory(@PathVariable Long announcementCategoryId) {
