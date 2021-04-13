@@ -44,7 +44,7 @@ public class AnnouncementCategoryFactory {
         AnnouncementCategory superCategory;
 
         if (modifyRequest.getSuperCategoryId().isPresent()) {
-            if (modifyRequest.getSuperCategoryId() != null) {
+            if (modifyRequest.getSuperCategoryId().get() != null) {
                 superCategory = announcementCategoryRepository
                         .findById(modifyRequest.getSuperCategoryId().get())
                         .orElseThrow(AnnouncementCategoryNotFoundException::new);
@@ -56,7 +56,7 @@ public class AnnouncementCategoryFactory {
         }
 
         if (modifyRequest.getName().isPresent()) {
-            if (modifyRequest.getName() != null) {
+            if (modifyRequest.getName().get() != null) {
                 updatedAnnouncementCategory.setName(modifyRequest.getName().get());
             }
         }

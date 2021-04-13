@@ -51,7 +51,8 @@ public class AnnouncementCategoryController {
     @PostMapping
     public ResponseEntity<?> saveAnnouncementCategory(@RequestBody @Valid AnnouncementCategoryReplaceRequest replaceRequest) {
         try {
-            AnnouncementCategory announcementCategory = announcementCategoryService.saveAnnouncementCategory(replaceRequest);
+            AnnouncementCategory announcementCategory =
+                    announcementCategoryService.saveAnnouncementCategory(replaceRequest);
             URI location = ServletUriComponentsBuilder
                     .fromCurrentRequest()
                     .path("/{id}")
@@ -68,7 +69,8 @@ public class AnnouncementCategoryController {
                                                          @RequestBody @Valid AnnouncementCategoryReplaceRequest replaceRequest) {
         try {
             return new ResponseEntity<>(
-                    announcementCategoryService.replaceAnnouncementCategory(announcementCategoryId, replaceRequest), HttpStatus.OK);
+                    announcementCategoryService.replaceAnnouncementCategory(announcementCategoryId, replaceRequest),
+                    HttpStatus.OK);
         } catch (AnnouncementCategoryNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -78,7 +80,9 @@ public class AnnouncementCategoryController {
     public ResponseEntity<?> modifyAnnouncementCategory(@PathVariable Long announcementCategoryId,
                                                         @RequestBody @Valid AnnouncementCategoryModifyRequest modifyRequest) {
         try {
-            return new ResponseEntity<>(announcementCategoryService.modifyAnnouncementCategory(announcementCategoryId, modifyRequest), HttpStatus.OK);
+            return new ResponseEntity<>(
+                    announcementCategoryService.modifyAnnouncementCategory(announcementCategoryId, modifyRequest),
+                    HttpStatus.OK);
         } catch (AnnouncementCategoryNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
