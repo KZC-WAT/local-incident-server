@@ -20,7 +20,7 @@ import java.net.URI;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/v1/announcementCategories")
+@RequestMapping("api/v1/announcement-categories")
 @RequiredArgsConstructor
 public class AnnouncementCategoryController {
     private final AnnouncementCategoryService announcementCategoryService;

@@ -10,9 +10,9 @@ import javax.validation.constraints.Size;
 @Data
 @NoArgsConstructor
 public class AnnouncementCategoryModifyRequest {
-    private final JsonNullable<Long> superCategoryId = JsonNullable.undefined();
+    private JsonNullable<Long> superCategoryId = JsonNullable.undefined();
 
     @NotBlank
     @Size(min = 3)
-    private final JsonNullable<String> name = JsonNullable.undefined();
+    private JsonNullable<String> name = JsonNullable.undefined();
 }

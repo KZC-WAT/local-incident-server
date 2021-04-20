@@ -49,12 +49,30 @@ public class AnnouncementCategoryService {
     @Transactional
     public AnnouncementCategory modifyAnnouncementCategory(Long announcementCategoryId,
                                                            AnnouncementCategoryModifyRequest modifyRequest) {
-        AnnouncementCategory announcementCategoryBeingModified =
+        AnnouncementCategory updatedAnnouncementCategory =
                 announcementCategoryRepository.findById(announcementCategoryId)
                         .orElseThrow(AnnouncementCategoryNotFoundException::new);
 
-        AnnouncementCategory updatedAnnouncementCategory =
-                announcementCategoryFactory.updateAnnouncementCategory(announcementCategoryBeingModified, modifyRequest);
+        AnnouncementCategory superCategory;
+
+        if (modifyRequest.getSuperCategoryId().isPresent()) {
+            if (modifyRequest.getSuperCategoryId().get() != null) {
+                superCategory = announcementCategoryRepository
+                        .findById(modifyRequest.getSuperCategoryId().get())
+                        .orElseThrow(AnnouncementCategoryNotFoundException::new);
+            } else {
+                superCategory = null;
+            }
+
+            updatedAnnouncementCategory.setSuperCategory(superCategory);
+        }
+
+        if (modifyRequest.getName().isPresent()) {
+            if (modifyRequest.getName().get() != null) {
+                updatedAnnouncementCategory.setName(modifyRequest.getName().get());
+            }
+        }
+
         return announcementCategoryRepository.save(updatedAnnouncementCategory);
     }
 
